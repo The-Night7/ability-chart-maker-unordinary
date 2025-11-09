@@ -1,590 +1,72 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>UnOrdinary Ability Chart Maker</title>
-  <style>
-    :root{
-      --bg:#0b0e14;
-      --panel:#121826;
-      --panel-2:#0f1420;
-      --card:#0f1220;
-      --text:#e7ecf3;
-      --muted:#a6b1c2;
-      --accent:#6ac1ff;
-      --accent-2:#9d7bff;
-      --grid:#1b2233;
-      --ok:#2ecc71;
-      --warn:#f1c40f;
-      --bad:#e74c3c;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background: radial-gradient(1000px 600px at 10% -10%, #151b2b 0%, #0b0e14 40%, #0b0e14 100%),
-                  linear-gradient(180deg, rgba(32,41,66,.25), transparent 30%),
-                  var(--bg);
-      color:var(--text);
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-      line-height:1.35;
-      display:flex; min-height:100%;
-    }
-    .container{
-      width:100%;
-      max-width:1200px;
-      margin:0 auto;
-      padding:24px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:24px;
-    }
-    @media (max-width: 900px){
-      .container{ grid-template-columns: 1fr; }
-    }
-    h1{
-      font-size:22px;
-      margin:0 0 8px;
-      font-weight:700;
-      letter-spacing:.2px;
-    }
-    .sub{
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:20px;
-    }
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent 40%), var(--panel);
-      border:1px solid #1e2740;
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      padding:18px;
-    }
-    .group{
-      display:grid;
-      gap:12px;
-      margin-bottom:16px;
-    }
-    label{
-      font-size:12px;
-      color:#c8d1e6;
-      letter-spacing:.3px;
-    }
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    input[type="text"]{
-      width:100%;
-      padding:10px 12px;
-      background:var(--panel-2);
-      border:1px solid #202a43;
-      border-radius:10px;
-      color:var(--text);
-      outline:none;
-      transition:.2s border-color,.2s box-shadow;
-    }
-    input[type="text"]::placeholder{ color:#7f8aa5; }
-    input[type="text"]:focus{
-      border-color:#3551ff;
-      box-shadow:0 0 0 3px rgba(53,81,255,.15);
-    }
-    .slider{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .slider input[type="range"]{
-      -webkit-appearance:none;
-      width:100%;
-      height:6px;
-      border-radius:999px;
-      background:linear-gradient(90deg, var(--accent), var(--accent-2));
-      outline:none;
-    }
-    .slider input[type="range"]::-webkit-slider-thumb{
-      -webkit-appearance:none;
-      appearance:none;
-      width:18px; height:18px;
-      border-radius:50%;
-      background:white;
-      border:2px solid #364cff;
-      box-shadow:0 2px 8px rgba(0,0,0,.3);
-      cursor:pointer;
-    }
-    .slider input[type="range"]::-moz-range-thumb{
-      width:18px;height:18px;border-radius:50%;background:white;border:2px solid #364cff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;
-    }
-    .valchip{
-      min-width:32px; text-align:center; font-weight:600;
-      padding:4px 8px; border-radius:8px; background:#18223a; color:#dfe7ff; font-size:12px; border:1px solid #243155;
-    }
-    .colorpicker{
-      display:flex; gap:12px; align-items:center;
-    }
-    .colorpicker input[type="color"]{
-      width:40px; height:40px; border:none; background:none; padding:0;
-      border-radius:10px; overflow:hidden; box-shadow: inset 0 0 0 2px #223058, 0 4px 12px rgba(0,0,0,.2);
-      cursor:pointer;
-    }
-    .actions{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
-    }
-    button{
-      appearance:none; border:none; border-radius:10px; padding:10px 14px; font-weight:600; cursor:pointer;
-      background:linear-gradient(180deg, #3a56ff, #2a44e6);
-      color:white; box-shadow:0 6px 18px rgba(58,86,255,.35), inset 0 -2px 0 rgba(0,0,0,.15);
-      transition:transform .06s ease, filter .2s ease, box-shadow .2s ease;
-    }
-    button.secondary{
-      background:#1b2541; color:#dbe5ff; box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);
-      border:1px solid #26335a;
-    }
-    button:active{ transform:translateY(1px) }
-    /* Preview card */
-    .preview{
-      position:relative;
-      background:
-        radial-gradient(600px 400px at 80% -10%, rgba(109,98,255,.25), transparent 60%),
-        radial-gradient(500px 350px at 0% 100%, rgba(61,195,255,.25), transparent 60%),
-        var(--card);
-      border:1px solid #1d2542;
-      border-radius:16px;
-      padding:0;
-      overflow:hidden;
-      min-height:520px;
-    }
-    .card-inner{
-      position:relative; z-index:2; padding:22px;
-      display:flex; flex-direction:column; gap:18px;
-    }
-    .grid-bg{
-      position:absolute; inset:0;
-      background:
-        linear-gradient(transparent 31px, var(--grid) 32px),
-        linear-gradient(90deg, transparent 31px, var(--grid) 32px);
-      background-size: 32px 32px;
-      opacity:.35;
-      mask-image: radial-gradient(100% 100% at 0% 0%, #000 50%, transparent 100%);
-    }
-    .title{
-      display:flex; align-items:baseline; justify-content:space-between; gap:12px;
-    }
-    .title h2{
-      margin:0; font-size:26px; letter-spacing:.3px;
-      text-shadow:0 2px 12px rgba(0,0,0,.35);
-    }
-    .badge{
-      font-size:12px; color:#cbd7ff; background:#1a2240; border:1px solid #2a3563; padding:6px 10px; border-radius:999px;
-    }
-    .meta{
-      color:#b7c3dd; font-size:14px;
-    }
-    .stat-list{
-      display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;
-    }
-    .stat{
-      background:#121b34; border:1px solid #21305c; border-radius:12px; padding:10px; text-align:center;
-    }
-    .stat h4{ margin:0 0 6px; font-size:12px; color:#b6c3e6; font-weight:700; letter-spacing:.4px; }
-    .stat .bar{
-      height:90px; border-radius:8px; overflow:hidden; background:linear-gradient(180deg, #0f1733, #0b1126);
-      display:flex; align-items:flex-end;
-    }
-    .stat .fill{
-      width:100%; background:linear-gradient(180deg, var(--accent), var(--accent-2));
-      box-shadow:0 0 16px rgba(110,132,255,.35) inset;
-      transition:height .25s ease;
-    }
-    .legend{
-      display:flex; gap:10px; flex-wrap:wrap; color:#aeb9d6; font-size:12px;
-    }
-    .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle }
-    .footer-line{
-      display:flex; justify-content:space-between; align-items:center;
-      color:#9fb0d8; font-size:12px; margin-top:4px;
-    }
-    .ability-chip{
-      display:inline-flex; align-items:center; gap:8px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
-      padding:8px 10px; border-radius:10px;
-    }
-    .ability-chip .swatch{
-      width:14px; height:14px; border-radius:50%;
-      box-shadow:0 0 0 2px rgba(255,255,255,.15) inset, 0 0 16px currentColor;
-    }
-    canvas{ display:none }
-    .download-hint{ color:#91a2c9; font-size:12px }
-    .credit{ color:#7083ad; font-size:11px; margin-top:8px }
-    /* Small logo-ish accent */
-    .corner-glow{
-      position:absolute; right:-40px; top:-40px; width:200px; height:200px;
-      background: radial-gradient(circle at 50% 50%, rgba(110,140,255,.35), transparent 60%);
-      filter: blur(12px);
-      pointer-events:none;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UnOrdinary Ability Chart Maker</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
+
 <body>
-  <div class="container">
-    <div class="panel">
-      <h1>UnOrdinary Ability Chart Maker</h1>
-      <div class="sub">Remplissez les champs, ajustez les stats et téléchargez votre carte.</div>
+<div class="container">
+    <div class="left">
+        <div class="header-with-info">
+            <div class="title-block">
+                <h1>UnOrdinary Ability Chart Maker</h1>
+                <div class="subtitle">By The-Night7</div>
+            </div>
+        </div>
 
-      <div class="group row">
-        <div class="field">
-          <label for="name">Name</label>
-          <input id="name" type="text" placeholder="Ex: Seraphina" />
-        </div>
-        <div class="field">
-          <label for="ability">Ability</label>
-          <input id="ability" type="text" placeholder="Ex: Time Manipulation" />
-        </div>
-      </div>
+        <input type="file" accept="image/*" id="imgInput">
+        <img id="uploadedImg" class="upload-img" alt="Uploaded Image" src="">
 
-      <div class="group row">
-        <div class="field">
-          <label for="level">Level</label>
-          <input id="level" type="text" placeholder="Ex: 7.5" />
+        <div class="info-box">
+            <label><b>Name:</b> <input type="text" id="nameInput"></label>
+            <label><b>Ability:</b> <input type="text" id="abilityInput"></label>
+            <label><b>Level:</b> <input type="text" id="levelInput"></label>
         </div>
-        <div class="field">
-          <label for="color">Ability Color</label>
-          <div class="colorpicker">
-            <input id="color" type="color" value="#6ac1ff" />
-            <span class="valchip" id="colorHex">#6AC1FF</span>
-          </div>
-        </div>
-      </div>
 
-      <div class="group">
-        <div class="field">
-          <label>Power</label>
-          <div class="slider">
-              <label for="power"></label><input id="power" type="range" min="0" max="10" value="7" />
-            <span class="valchip" id="powerVal">7</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Speed</label>
-          <div class="slider">
-              <label for="speed"></label><input id="speed" type="range" min="0" max="10" value="7" />
-            <span class="valchip" id="speedVal">7</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Trick</label>
-          <div class="slider">
-              <label for="trick"></label><input id="trick" type="range" min="0" max="10" value="7" />
-            <span class="valchip" id="trickVal">7</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Recovery</label>
-          <div class="slider">
-              <label for="recovery"></label><input id="recovery" type="range" min="0" max="10" value="7" />
-            <span class="valchip" id="recoveryVal">7</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Defense</label>
-          <div class="slider">
-              <label for="defense"></label><input id="defense" type="range" min="0" max="10" value="7" />
-            <span class="valchip" id="defenseVal">7</span>
-          </div>
-        </div>
-      </div>
+        <div class="inputs">
+            <label>Power: <input type="number" id="powerInput" step="0.1" min="0"></label>
+            <label>Speed: <input type="number" id="speedInput" step="0.1" min="0"></label>
+            <label>Trick: <input type="number" id="trickInput" step="0.1" min="0"></label>
+            <label>Recovery: <input type="number" id="recoveryInput" step="0.1" min="0"></label>
+            <label>Defense: <input type="number" id="defenseInput" step="0.1" min="0"></label>
+            <label>Ability Color: <input type="color" id="colorPicker" value="#92dfec"></label>
 
-      <div class="actions">
-        <button id="download">Télécharger l'image</button>
-        <button id="reset" class="secondary">Réinitialiser</button>
-        <span class="download-hint">Astuce: remplissez tout puis cliquez sur “Télécharger”.</span>
-      </div>
-      <div class="credit">By Atlas Skies</div>
+            <button id="viewBtn">View Character Chart</button>
+        </div>
     </div>
 
-    <div class="preview" id="previewCard">
-      <div class="grid-bg"></div>
-      <div class="corner-glow"></div>
-      <div class="card-inner" id="cardArea">
-        <div class="title">
-          <h2 id="outName">Name</h2>
-          <span class="badge" id="outLevel">Level: —</span>
-        </div>
-        <div class="meta" id="outAbility">Ability: —</div>
-
-        <div class="stat-list">
-          <div class="stat">
-            <h4>Power</h4>
-            <div class="bar"><div class="fill" id="barPower" style="height:70%"></div></div>
-          </div>
-          <div class="stat">
-            <h4>Speed</h4>
-            <div class="bar"><div class="fill" id="barSpeed" style="height:70%"></div></div>
-          </div>
-          <div class="stat">
-            <h4>Trick</h4>
-            <div class="bar"><div class="fill" id="barTrick" style="height:70%"></div></div>
-          </div>
-          <div class="stat">
-            <h4>Recovery</h4>
-            <div class="bar"><div class="fill" id="barRecovery" style="height:70%"></div></div>
-          </div>
-          <div class="stat">
-            <h4>Defense</h4>
-            <div class="bar"><div class="fill" id="barDefense" style="height:70%"></div></div>
-          </div>
-        </div>
-
-        <div class="legend">
-          <span><span class="dot" id="dot1" style="background:var(--accent)"></span> core</span>
-          <span><span class="dot" id="dot2" style="background:var(--accent-2)"></span> surge</span>
-          <span><span class="dot" style="background:#2a3358"></span> base</span>
-        </div>
-
-        <div class="footer-line">
-          <div class="ability-chip" id="abilityChip" style="color:#6ac1ff">
-            <span class="swatch" id="chipSwatch"></span>
-            <span id="chipText">Ability Color</span>
-          </div>
-          <span id="timestamp"></span>
-        </div>
-      </div>
+    <div class="chart-area">
+        <canvas id="radarChart1"></canvas>
     </div>
-  </div>
+</div>
 
-  <canvas id="canvas"></canvas>
+<!-- Overlay -->
+<div id="overlay" class="overlay hidden">
+    <div id="characterBox" class="character-box">
+        <button id="closeBtn" class="close-btn">×</button>
 
-  <script>
-    const qs = s => document.querySelector(s);
-    const qsa = s => Array.from(document.querySelectorAll(s));
+        <div class="image-section">
+            <img id="overlayImg" class="overlay-img" alt="Character Image" src="">
+            <div class="text-box">
+                <b>Name:</b> <span id="overlayName">-</span><br>
+                <b>Ability:</b> <span id="overlayAbility">-</span><br>
+                <b>Level:</b> <span id="overlayLevel">-</span>
+            </div>
+        </div>
 
-    const nameIn = qs('#name');
-    const abilityIn = qs('#ability');
-    const levelIn = qs('#level');
-    const colorIn = qs('#color');
+        <div class="overlay-chart">
+            <canvas id="radarChart2"></canvas>
+        </div>
 
-    const powerIn = qs('#power');
-    const speedIn = qs('#speed');
-    const trickIn = qs('#trick');
-    const recoveryIn = qs('#recovery');
-    const defenseIn = qs('#defense');
+        <button id="downloadBtn">Download Character Chart</button>
+    </div>
+</div>
 
-    const outName = qs('#outName');
-    const outAbility = qs('#outAbility');
-    const outLevel = qs('#outLevel');
-
-    const bars = {
-      power: qs('#barPower'),
-      speed: qs('#barSpeed'),
-      trick: qs('#barTrick'),
-      recovery: qs('#barRecovery'),
-      defense: qs('#barDefense')
-    };
-
-    const chips = {
-      power: qs('#powerVal'),
-      speed: qs('#speedVal'),
-      trick: qs('#trickVal'),
-      recovery: qs('#recoveryVal'),
-      defense: qs('#defenseVal'),
-      colorHex: qs('#colorHex')
-    };
-
-    const abilityChip = qs('#abilityChip');
-    const chipSwatch = qs('#chipSwatch');
-    const chipText = qs('#chipText');
-    const timestamp = qs('#timestamp');
-
-    const preview = qs('#previewCard');
-    const cardArea = qs('#cardArea');
-
-    const downloadBtn = qs('#download');
-    const resetBtn = qs('#reset');
-    const canvas = qs('#canvas');
-
-    function pad2(n){ return String(n).padStart(2,'0'); }
-    function updateTimestamp(){
-      const d = new Date();
-      timestamp.textContent = `Generated ${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-    }
-
-    function setAccent(color){
-      document.documentElement.style.setProperty('--accent', color);
-      // a second hue for gradient
-      const c2 = shiftHue(color, 30);
-      document.documentElement.style.setProperty('--accent-2', c2);
-      abilityChip.style.color = color;
-      chipSwatch.style.background = color;
-      chips.colorHex.textContent = color.toUpperCase();
-    }
-
-    function shiftHue(hex, deg){
-      // hex -> hsl -> shift -> back
-      const {h,s,l} = hexToHsl(hex);
-      const h2 = (h + deg + 360) % 360;
-      return hslToHex(h2,s,l);
-    }
-
-    function hexToHsl(H){
-      let r=0,g=0,b=0;
-      H = H.replace('#','');
-      if (H.length === 3){
-        r = parseInt(H[0]+H[0],16);
-        g = parseInt(H[1]+H[1],16);
-        b = parseInt(H[2]+H[2],16);
-      } else {
-        r = parseInt(H.substring(0,2),16);
-        g = parseInt(H.substring(2,4),16);
-        b = parseInt(H.substring(4,6),16);
-      }
-      r/=255; g/=255; b/=255;
-      const cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
-      let h=0,s=0,l=0;
-      if (delta===0) h=0;
-      else if (cmax===r) h = ((g-b)/delta)%6;
-      else if (cmax===g) h = (b-r)/delta + 2;
-      else h = (r-g)/delta + 4;
-      h = Math.round(h*60); if (h<0) h+=360;
-      l = (cmax+cmin)/2;
-      s = delta===0 ? 0 : delta/(1-Math.abs(2*l-1));
-      return {h, s: +(s*100).toFixed(1), l: +(l*100).toFixed(1)};
-    }
-
-    function hslToHex(h,s,l){
-      s/=100; l/=100;
-      const C = (1 - Math.abs(2*l-1))*s;
-      const X = C*(1 - Math.abs((h/60)%2 - 1));
-      const m = l - C/2;
-      let r=0,g=0,b=0;
-      if (0<=h && h<60){ r=C; g=X; b=0; }
-      else if (60<=h && h<120){ r=X; g=C; b=0; }
-      else if (120<=h && h<180){ r=0; g=C; b=X; }
-      else if (180<=h && h<240){ r=0; g=X; b=C; }
-      else if (240<=h && h<300){ r=X; g=0; b=C; }
-      else { r=C; g=0; b=X; }
-      r = Math.round((r+m)*255);
-      g = Math.round((g+m)*255);
-      b = Math.round((b+m)*255);
-      return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();
-    }
-
-    function clamp(n,min,max){ return Math.min(max, Math.max(min,n)); }
-
-    function updateText(){
-      outName.textContent = nameIn.value.trim() || 'Name';
-      outAbility.textContent = 'Ability: ' + (abilityIn.value.trim() || '—');
-      outLevel.textContent = 'Level: ' + (levelIn.value.trim() || '—');
-      chipText.textContent = 'Ability Color';
-    }
-
-    function setBar(el, val){
-      const pct = clamp(val,0,10) * 10;
-      el.style.height = pct + '%';
-    }
-
-    function onRange(input, chip, bar){
-      const v = Number(input.value);
-      chip.textContent = v;
-      setBar(bar, v);
-    }
-
-    function attach(){
-      [nameIn, abilityIn, levelIn].forEach(i => i.addEventListener('input', updateText));
-      [[powerIn,'power'],[speedIn,'speed'],[trickIn,'trick'],[recoveryIn,'recovery'],[defenseIn,'defense']].forEach(([inp,key])=>{
-        inp.addEventListener('input', ()=> onRange(inp, chips[key], bars[key]));
-      });
-      colorIn.addEventListener('input', e => setAccent(e.target.value.toUpperCase()));
-      downloadBtn.addEventListener('click', downloadImage);
-      resetBtn.addEventListener('click', resetAll);
-      updateTimestamp();
-      setInterval(updateTimestamp, 60*1000);
-    }
-
-    function resetAll(){
-      nameIn.value = '';
-      abilityIn.value = '';
-      levelIn.value = '';
-      [powerIn,speedIn,trickIn,recoveryIn,defenseIn].forEach(inp => inp.value = 7);
-      Object.values(bars).forEach(b => setBar(b,7));
-      Object.entries(chips).forEach(([k, v])=>{
-        if (k !== 'colorHex') v.textContent = '7';
-      });
-      setAccent('#6AC1FF');
-      updateText();
-    }
-
-    // Simple DOM to image using SVG foreignObject without external libs
-    async function downloadImage(){
-      const scale = 2; // retina
-      const node = preview;
-      const rect = node.getBoundingClientRect();
-      const width = Math.ceil(rect.width);
-      const height = Math.ceil(rect.height);
-
-      const clone = node.cloneNode(true);
-      // Ensure computed gradient colors are inlined
-      clone.style.width = width + 'px';
-      clone.style.height = height + 'px';
-
-      // Wrap in a container for foreignObject
-      const wrap = document.createElement('div');
-      wrap.appendChild(clone);
-
-      const xml = new XMLSerializer().serializeToString(wrap);
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${width*scale}" height="${height*scale}">
-          <foreignObject x="0" y="0" width="${width*scale}" height="${height*scale}" transform="scale(${scale})">
-            ${xml.replace(/#/g,'%23').replace(/\n/g,' ')}
-          </foreignObject>
-        </svg>
-      `;
-      const svgBlob = new Blob([svg], {type:'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(svgBlob);
-
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      const done = new Promise((res)=>{ img.onload = res; });
-      img.src = url;
-
-      await done;
-
-      const ctx = canvas.getContext('2d');
-      canvas.width = width*scale;
-      canvas.height = height*scale;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.drawImage(img,0,0);
-
-      URL.revokeObjectURL(url);
-
-      canvas.toBlob((blob)=>{
-        const a = document.createElement('a');
-        a.download = `unordinary_ability_chart.png`;
-        a.href = URL.createObjectURL(blob);
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(()=>{
-          URL.revokeObjectURL(a.href);
-          a.remove();
-        }, 100);
-      }, 'image/png');
-    }
-
-    // Initialize
-    (function init(){
-      attach();
-      updateText();
-      Object.values(bars).forEach(b => setBar(b,7));
-      setAccent('#6AC1FF');
-    })();
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
